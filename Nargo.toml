@@ -1,0 +1,15 @@
+[workspace]
+members = [
+  # Libraries — reusable circuit primitives
+  "lib/zk_signer",
+  "lib/zk_labels",
+  "lib/zk_multisig",
+  "lib/zk_scope",
+
+  # Circuits — executable programs (type = "bin")
+  "circuits/zk_multi_sig_ecdsa",
+  "circuits/zk_multi_sig_ecdsa_private_state_validation",
+  "circuits/zk_label_binding",
+  "circuits/zk_multi_sig_label_binding",
+  "circuits/zk_scope_validation",
+]

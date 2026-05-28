@@ -1,0 +1,9 @@
+[package]
+name = "zk_multi_sig_label_binding"
+type = "bin"
+authors = ["Walid Khemiri"]
+
+[dependencies]
+zk_signer   = { path = "../../lib/zk_signer" }
+zk_labels   = { path = "../../lib/zk_labels" }
+zk_multisig = { path = "../../lib/zk_multisig" }

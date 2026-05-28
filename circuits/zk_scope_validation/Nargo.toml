@@ -1,0 +1,7 @@
+[package]
+name = "zk_scope_validation"
+type = "bin"
+authors = ["Microchain Labs"]
+
+[dependencies]
+zk_scope = { path = "../../lib/zk_scope" }

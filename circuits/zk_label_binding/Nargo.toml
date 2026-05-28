@@ -1,0 +1,9 @@
+[package]
+name = "zk_label_binding"
+type = "bin"
+authors = ["Walid Khemiri"]
+
+[dependencies]
+zk_signer  = { path = "../../lib/zk_signer" }
+zk_labels  = { path = "../../lib/zk_labels" }
+poseidon   = { tag = "v0.2.0", git = "https://github.com/noir-lang/poseidon" }
