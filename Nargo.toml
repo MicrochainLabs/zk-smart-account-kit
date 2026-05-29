@@ -12,4 +12,5 @@ members = [
   "circuits/zk_label_binding",
   "circuits/zk_multi_sig_label_binding",
   "circuits/zk_scope_validation",
+  "circuits/zk_signers",
 ]

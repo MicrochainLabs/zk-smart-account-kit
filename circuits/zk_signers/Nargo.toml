@@ -1,0 +1,7 @@
+[package]
+name = "zk_signers"
+type = "bin"
+authors = ["Walid Khemiri"]
+
+[dependencies]
+zk_signer = { path = "../lib/zk_signer" }

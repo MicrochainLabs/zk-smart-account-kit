@@ -1,6 +1,14 @@
 use dep::std;
 use poseidon::poseidon::bn254::hash_1 as poseidon1;
+use poseidon::poseidon::bn254::hash_2 as poseidon2;
+use binary_merkle_root::binary_merkle_root;
 use keccak256::keccak256;
+
+// --- Constants ---------------------------------------------------------------
+
+/// Depth of the binary Merkle signers tree.
+/// Supports up to 2^SIGNERS_MAX_DEPTH authorized signers.
+pub global SIGNERS_MAX_DEPTH: u32 = 4;
 
 // --- Types --------------------------------------------------------------------
 
@@ -98,4 +106,38 @@ pub fn cmp_gt<let N: u32>(a: [u8; N], b: [u8; N]) -> bool {
         }
     }
     result
+}
+
+// --- Single-signer proof -----------------------------------------------------
+
+/// Verify a single-signer proof for smart account tx authentication:
+///   1. ECDSA signature over txn_hash is valid for the given pubkey
+///   2. The derived Ethereum address is a member of the authorized signers tree
+///
+/// Public inputs (checked on-chain): txn_hash, signers_root.
+/// Private witness (zero-knowledge): pubkey, signature, Merkle proof.
+pub fn verify_single_signer(
+    pubkey:         PubKey,
+    signature:      Signature,
+    txn_hash:       Hash,
+    signers_root:   Field,
+    proof_length:   u32,
+    proof_index:    [u1; SIGNERS_MAX_DEPTH],
+    proof_siblings: [Field; SIGNERS_MAX_DEPTH],
+) {
+    // 1. Verify ECDSA - derives the signer's Ethereum address
+    let address = verify_ecdsa_get_address(pubkey, signature, txn_hash);
+
+    // 2. Compute the Poseidon leaf for this address
+    let leaf = signer_leaf(address);
+
+    // 3. Verify Merkle membership in the signers tree
+    let computed_root = binary_merkle_root(
+        poseidon2,
+        leaf,
+        proof_length,
+        proof_index,
+        proof_siblings,
+    );
+    assert(signers_root == computed_root);
 }
