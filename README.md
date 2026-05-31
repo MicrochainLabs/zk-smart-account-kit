@@ -27,6 +27,7 @@ zk-smart-account-kit/
 │   └── zk_scope/                # Programmable transaction access control
 │
 └── circuits/                    # Executable circuits (type = "bin")
+    ├── zk_signers/                                  # Single-signer ECDSA authorization circuit
     ├── zk_multi_sig_ecdsa/                          # Main threshold signature circuit
     ├── zk_multi_sig_ecdsa_private_state_validation/ # State commitment validation circuit
     ├── zk_label_binding/                            # Label-to-signer binding circuit
@@ -44,7 +45,7 @@ The cryptographic foundation. Verifies secp256k1 ECDSA signatures inside a Noir 
 
 **Key exports:**
 - `verify_ecdsa_get_address(pubkey, sig, hash)` — ECDSA verification + address recovery
-- `signer_leaf(address)` — Poseidon2 leaf hash of a signer address
+- `signer_leaf(address)` — Poseidon1 leaf hash of a signer address
 - `address_to_field(address)` — 20-byte address → BN254 field element
 - `cmp_gt(a, b)` — constant-time comparison (used for anti-replay ordering)
 
@@ -67,7 +68,7 @@ Implements M-of-N threshold signature logic. Verifies that M distinct authorized
 
 **Key exports:**
 - `compute_state_root(signers_root, threshold)` — reconstructs the on-chain `stateRoot`
-- `verify_multisig(signers, sigs, hash, state_root, threshold)` — full M-of-N check
+- `verify_multi_sig(signers, sigs, hash, threshold, signers_root, proof_lengths, proof_indices, proof_siblings, state_root)` — full M-of-N check
 
 ### `lib/zk_scope`
 
@@ -79,6 +80,7 @@ Defines per-address transaction authorization rules (allowed targets, calldata p
 
 | Circuit | Libraries used | Purpose |
 |---|---|---|
+| `zk_signers` | `zk_signer` | Prove a single authorized signer approved a transaction |
 | `zk_multi_sig_ecdsa` | `zk_signer`, `zk_multisig` | Prove M-of-N signers approved a transaction |
 | `zk_multi_sig_ecdsa_private_state_validation` | `zk_signer`, `zk_multisig` | Prove a signer set + threshold commitment is valid |
 | `zk_label_binding` | `zk_signer`, `zk_labels` | Prove a label is bound to a signer in the registry |
@@ -105,25 +107,80 @@ Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Eac
 
 ## Prerequisites
 
-- [Noir](https://noir-lang.org) — tested with the version specified in each `Nargo.toml`
-- [Barretenberg](https://github.com/AztecProtocol/barretenberg) (`bb`) for UltraHonk proving
+| Tool | Version | Install |
+|---|---|---|
+| [Noir / nargo](https://noir-lang.org) | `1.0.0-beta.18` | `noirup -v 1.0.0-beta.18` |
+| [Barretenberg / bb](https://github.com/AztecProtocol/barretenberg) | `3.0.0-nightly.20260102` | `bbup -v 3.0.0-nightly.20260102` |
 
 ## Getting Started
 
-```bash
-# Compile all circuits
-nargo build
+### 1. Compile all circuits
 
-# Run tests (if any)
+```bash
+# From the workspace root — compiles every lib and circuit
+nargo build
+```
+
+### 2. Run tests
+
+```bash
+# Run all test functions across the workspace
 nargo test
 
-# Compile a specific circuit
-cd circuits/zk_multi_sig_ecdsa && nargo build
+# Run tests for a single circuit with output
+nargo test --package zk_multi_sig_ecdsa --show-output
+```
 
-# Generate a proof (example)
+### 3. Generate the witness (execute)
+
+The `Prover.toml` file in each circuit directory provides the private inputs.
+
+```bash
 cd circuits/zk_multi_sig_ecdsa
 nargo execute
-bb prove -b ./target/zk_multi_sig_ecdsa.json -w ./target/zk_multi_sig_ecdsa.gz -o ./target/proof
+# Produces: target/zk_multi_sig_ecdsa.gz
+```
+
+### 4. Generate a proof
+
+```bash
+bb prove \
+  -b ./target/zk_multi_sig_ecdsa.json \
+  -w ./target/zk_multi_sig_ecdsa.gz \
+  -o ./target/proof
+# Produces: target/proof/proof
+```
+
+### 5. Generate the verification key (VK)
+
+```bash
+bb write_vk \
+  -b ./target/zk_multi_sig_ecdsa.json \
+  -o ./target/vk
+# Produces: target/vk/vk
+```
+
+### 6. Verify a proof
+
+```bash
+bb verify \
+  -k ./target/vk/vk \
+  -p ./target/proof/proof
+# Exits 0 on success
+```
+
+### Full one-liner (build → witness → prove → write_vk → verify)
+
+Replace `<circuit>` with any circuit name (e.g. `zk_multi_sig_ecdsa`, `zk_scope_validation`, ...).
+
+```bash
+CIRCUIT=zk_multi_sig_ecdsa
+cd circuits/$CIRCUIT
+nargo build
+nargo execute
+bb prove  -b ./target/$CIRCUIT.json -w ./target/$CIRCUIT.gz -o ./target/proof
+bb write_vk -b ./target/$CIRCUIT.json -o ./target/vk
+bb verify -k ./target/vk/vk -p ./target/proof/proof
 ```
 
 ---
@@ -132,8 +189,8 @@ bb prove -b ./target/zk_multi_sig_ecdsa.json -w ./target/zk_multi_sig_ecdsa.gz -
 
 All circuits target the **BN254** scalar field and use:
 
-- **Poseidon2** for hashing (signer leaves, state roots, label leaves)
-- **LeanIMT / Binary Merkle Tree** for membership proofs
+- **Poseidon1** for signer leaves; **Poseidon2** for state roots, label leaves, scope rule leaves
+- **Binary Merkle Tree** (`binary_merkle_root`) for membership proofs
 - **secp256k1** for ECDSA signature verification
 - **UltraHonk / Barretenberg** as the default backend
 

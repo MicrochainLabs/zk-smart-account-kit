@@ -14,39 +14,39 @@ use zk_scope::{
 /// Proves that a transaction (txn_target, txn_selector, txn_value, txn_calldata_hash)
 /// satisfies at least one rule in the private scope policy committed on-chain as scope_root.
 ///
-/// Public inputs (in order — match the TypeScript SDK and ERC-8039 adapter):
-///   [0] txn_target        — target contract address as a BN254 field element
-///   [1] txn_selector      — 4-byte function selector right-padded to 32 bytes
-///   [2] txn_value         — ETH value in wei as a field element
-///   [3] txn_calldata_hash — Poseidon commitment to decoded calldata parameters
-///   [4] scope_root        — on-chain Merkle root of the scope rule registry
+/// Public inputs (in order - match the TypeScript SDK and ERC-8039 adapter):
+///   [0] txn_target        - target contract address as a BN254 field element
+///   [1] txn_selector      - 4-byte function selector right-padded to 32 bytes
+///   [2] txn_value         - ETH value in wei as a field element
+///   [3] txn_calldata_hash - Poseidon commitment to decoded calldata parameters
+///   [4] scope_root        - on-chain Merkle root of the scope rule registry
 ///
 /// Private inputs:
-///   rule_*      — the matching scope rule (target, selector, value_max, constraints)
-///   param_values — decoded calldata parameters (zero-padded to MAX_PARAMS)
-///   proof_*     — Merkle membership proof for the rule
+///   rule_*      - the matching scope rule (target, selector, value_max, constraints)
+///   param_values - decoded calldata parameters (zero-padded to MAX_PARAMS)
+///   proof_*     - Merkle membership proof for the rule
 fn main(
-    // ── Private: matching rule ──────────────────────────────────────────────
+    // -- Private: matching rule ----------------------------------------------
     rule_target:      Field,
     rule_selector:    Field,
     rule_value_max:   Field,
     rule_constraints: [ParamConstraint; MAX_PARAMS],
 
-    // ── Private: decoded calldata ───────────────────────────────────────────
+    // -- Private: decoded calldata -------------------------------------------
     param_values: [Field; MAX_PARAMS],
 
-    // ── Private: Merkle proof for the rule ──────────────────────────────────
+    // -- Private: Merkle proof for the rule ----------------------------------
     proof_length:   u32,
     proof_indices:  [u1; SCOPE_MAX_DEPTH],
     proof_siblings: [Field; SCOPE_MAX_DEPTH],
 
-    // ── Public: transaction details ─────────────────────────────────────────
+    // -- Public: transaction details -----------------------------------------
     txn_target:        pub Field,
     txn_selector:      pub Field,
     txn_value:         pub Field,
     txn_calldata_hash: pub Field,
 
-    // ── Public: on-chain commitment ─────────────────────────────────────────
+    // -- Public: on-chain commitment -----------------------------------------
     scope_root: pub Field,
 ) {
     verify_scope_membership(
@@ -66,7 +66,7 @@ fn main(
     );
 }
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
+// -- Tests ---------------------------------------------------------------------
 
 #[test]
 fn test_single_rule_exact_params() {
@@ -75,12 +75,12 @@ fn test_single_rule_exact_params() {
 
     // target = address(0xDEAD) as Field
     let target_field: Field = 0xDEAD;
-    // selector = bytes4(0xd0e30db0) — Uniswap deposit() as a dummy
+    // selector = bytes4(0xd0e30db0) - Uniswap deposit() as a dummy
     let selector_field: Field = 0xd0e30db0;
     // value_max = 1 ETH in wei
     let value_max: Field = 1_000_000_000_000_000_000;
 
-    // Param 0: exact match — tokenIn == 0xUSDC (dummy)
+    // Param 0: exact match - tokenIn == 0xUSDC (dummy)
     // Params 1-3: unconstrained
     let constraints: [ParamConstraint; MAX_PARAMS] = [
         ParamConstraint { constraint_type: PARAM_EXACT,         value: 0xA0b8 },
@@ -122,7 +122,7 @@ fn test_single_rule_range_param() {
     let selector_field: Field = 0x12345678;
     let value_max: Field = 0; // no ETH transfer
 
-    // Param 0: range max — amount <= 100_000
+    // Param 0: range max - amount <= 100_000
     let constraints: [ParamConstraint; MAX_PARAMS] = [
         ParamConstraint { constraint_type: PARAM_RANGE_MAX,     value: 100_000 },
         ParamConstraint { constraint_type: PARAM_UNCONSTRAINED, value: 0 },

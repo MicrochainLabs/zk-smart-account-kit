@@ -85,7 +85,7 @@ pub fn compute_rule_leaf(
 
 /// Verify that a single decoded parameter satisfies its constraint.
 ///
-/// - UNCONSTRAINED (0): always passes — no assertion emitted.
+/// - UNCONSTRAINED (0): always passes - no assertion emitted.
 /// - EXACT (1): param_value == constraint.value.
 /// - RANGE_MAX (2): param_value (as u128) <= constraint.value (as u128).
 fn check_param_constraint(param_value: Field, constraint: ParamConstraint) {
@@ -115,7 +115,7 @@ fn check_param_constraint(param_value: Field, constraint: ParamConstraint) {
 ///   5. For each param_i: param_values[i] satisfies rule_constraints[i].
 ///   6. Poseidon(param_values) == txn_calldata_hash (calldata commitment).
 ///
-/// All rule fields and param_values are private inputs — the verifier only
+/// All rule fields and param_values are private inputs - the verifier only
 /// learns that *some* rule in the committed scope was satisfied.
 pub fn verify_scope_membership(
     // Public transaction details

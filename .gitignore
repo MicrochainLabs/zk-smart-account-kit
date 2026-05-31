@@ -1,3 +1,6 @@
+# Noir / nargo build output (compiled circuits, witnesses, proofs, verification keys)
+target/
+
 # Logs
 logs
 *.log
