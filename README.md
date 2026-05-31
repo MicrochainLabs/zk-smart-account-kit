@@ -28,8 +28,8 @@ zk-smart-account-kit/
 │
 └── circuits/                    # Executable circuits (type = "bin")
     ├── zk_signers/                                  # Single-signer ECDSA authorization circuit
-    ├── zk_multi_sig_ecdsa/                          # Main threshold signature circuit
     ├── zk_multi_sig_ecdsa_private_state_validation/ # State commitment validation circuit
+    ├── zk_multi_sig_ecdsa/                          # Main threshold signature circuit
     ├── zk_label_binding/                            # Label-to-signer binding circuit
     ├── zk_multi_sig_label_binding/                  # Multi-sig + label binding combined
     └── zk_scope_validation/                         # Transaction scope policy circuit
@@ -81,8 +81,8 @@ Defines per-account transaction authorization rules (allowed targets, calldata p
 | Circuit | Libraries used | Purpose |
 |---|---|---|
 | `zk_signers` | `zk_signer` | Prove a single authorized signer approved a transaction |
-| `zk_multi_sig_ecdsa` | `zk_signer`, `zk_multisig` | Prove M-of-N signers approved a transaction |
 | `zk_multi_sig_ecdsa_private_state_validation` | `zk_signer`, `zk_multisig` | Prove a signer set + threshold commitment is valid |
+| `zk_multi_sig_ecdsa` | `zk_signer`, `zk_multisig` | Prove M-of-N signers approved a transaction |
 | `zk_label_binding` | `zk_signer`, `zk_labels` | Prove a label is bound to a signer in the registry |
 | `zk_multi_sig_label_binding` | `zk_signer`, `zk_labels`, `zk_multisig` | Prove M-of-N signers with label membership |
 | `zk_scope_validation` | `zk_scope` | Prove a transaction satisfies the committed scope policy |
