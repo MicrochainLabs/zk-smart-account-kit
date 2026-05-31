@@ -51,7 +51,7 @@ The cryptographic foundation. Verifies secp256k1 ECDSA signatures inside a Noir 
 
 ### `lib/zk_labels`
 
-Binds human-readable labels (e.g. `"cfo"`, `"auditor"`, `"treasury"`) to Ethereum addresses in a Merkle tree. Proves label membership without revealing the full registry.
+Binds human-readable labels (e.g. `"cfo"`, `"auditor"`, `"treasury"`) to Signer identifier(e.g. Ethereum addresse) in a Merkle tree. Proves label membership without revealing the full registry.
 
 **Dependencies:** `binary_merkle_root`, `poseidon`
 
@@ -72,7 +72,7 @@ Implements M-of-N threshold signature logic. Verifies that M distinct authorized
 
 ### `lib/zk_scope`
 
-Defines per-address transaction authorization rules (allowed targets, calldata patterns, value ranges). Proves that a transaction complies with a committed policy without disclosing the full rule set.
+Defines per-account transaction authorization rules (allowed targets, calldata patterns, value ranges). Proves that a transaction complies with a committed policy without disclosing the full rule set.
 
 ---
 
@@ -99,7 +99,7 @@ Deploy a `ZKMultiSigEcdsaFactory` and use the resulting proxy as a Safe owner. T
 
 ### Nexus (ERC-7579)
 
-Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Each account stores its own `stateRoot`. The module validates ERC-4337 `UserOperation`s and EIP-1271 signatures by verifying a ZK proof.
+Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Each account stores its own `stateRoot`. The module validates ERC-4337 `UserOperation`s by verifying a ZK proof.
 
 > The Solidity adapter contracts live in the [microchain-zk-signers](https://github.com/microchainlabs/microchain-zk-signers) repository.
 
