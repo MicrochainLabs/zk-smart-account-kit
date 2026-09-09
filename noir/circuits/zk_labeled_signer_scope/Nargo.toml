@@ -1,0 +1,9 @@
+[package]
+name = "zk_labeled_signer_scope"
+type = "bin"
+authors = ["Microchain Labs"]
+
+[dependencies]
+zk_signer = { path = "../../lib/zk_signer" }
+zk_labels = { path = "../../lib/zk_labels" }
+zk_scope = { path = "../../lib/zk_scope" }

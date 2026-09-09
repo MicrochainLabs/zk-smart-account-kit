@@ -1,0 +1,43 @@
+dest_address_bytes = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+dest_address_field = ""
+dest_label_bytes = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+dest_label_proof_indices = ["", "", "", ""]
+dest_label_proof_length = ""
+dest_label_proof_siblings = ["", "", "", ""]
+param_values = ["", "", "", ""]
+registry_root = ""
+rule_selector = ""
+rule_value_max = ""
+scope_proof_indices = ["", "", "", "", "", ""]
+scope_proof_length = ""
+scope_proof_siblings = ["", "", "", "", "", ""]
+scope_root = ""
+signature = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+signer_label_bytes = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+signer_proof_indices = ["", "", "", ""]
+signer_proof_length = ""
+signer_proof_siblings = ["", "", "", ""]
+signers_root = ""
+txn_hash = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+txn_selector = ""
+txn_value = ""
+
+[pubkey]
+x = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+y = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+
+[[rule_constraints]]
+constraint_type = ""
+value = ""
+
+[[rule_constraints]]
+constraint_type = ""
+value = ""
+
+[[rule_constraints]]
+constraint_type = ""
+value = ""
+
+[[rule_constraints]]
+constraint_type = ""
+value = ""

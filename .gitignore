@@ -144,3 +144,29 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+
+# Compiler files
+cache/
+out/
+artifacts/
+crs/
+circuits/crs/
+/deployments/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+node_modules
+
+typechain-types
+yarn-error.log
+
+ignition/deployments
