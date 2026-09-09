@@ -148,6 +148,7 @@ vite.config.ts.timestamp-*
 
 # Compiler files
 cache/
+cache_forge/
 out/
 artifacts/
 crs/
