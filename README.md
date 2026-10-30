@@ -23,17 +23,15 @@ zk-smart-account-kit/
 ├── lib/                         # Reusable circuit libraries (type = "lib")
 │   ├── zk_signer/               # ECDSA address recovery inside ZK
 │   ├── zk_labels/               # Privacy-preserving identity / role naming
-│   ├── zk_multisig/             # M-of-N threshold signature logic
 │   └── zk_scope/                # Programmable transaction access control
 │
 └── circuits/                    # Executable circuits (type = "bin")
     ├── zk_signers/                                  # Single-signer ECDSA authorization circuit
-    ├── zk_multi_sig_ecdsa_private_state_validation/ # State commitment validation circuit
-    ├── zk_multi_sig_ecdsa/                          # Main threshold signature circuit
     ├── zk_label_binding/                            # Label-to-signer binding circuit
-    ├── zk_multi_sig_label_binding/                  # Multi-sig + label binding combined
     └── zk_scope_validation/                         # Transaction scope policy circuit
 ```
+
+> M-of-N threshold signature logic (`zk_multisig`) and the multi-sig circuits (`zk_multi_sig_ecdsa`, `zk_multi_sig_ecdsa_private_state_validation`, `zk_multi_sig_label_binding`) are no longer part of this kit. They live in the [microchain-zk-signers](https://github.com/MicrochainLabs/microchain-zk-signers) repository.
 
 ---
 
@@ -59,17 +57,6 @@ Binds human-readable labels (e.g. `"cfo"`, `"auditor"`, `"treasury"`) to Signer 
 - `verify_label_membership(label, address, root, proof)` — Merkle membership proof
 - `label_leaf(label, address)` — Poseidon leaf hash for a label-address binding
 
-### `lib/zk_multisig`
-
-Implements M-of-N threshold signature logic. Verifies that M distinct authorized signers (from a committed signer set) have signed a given message, without revealing their identities.
-
-**Key constants:**
-- `MAX_SIGNERS = 5`, `MAX_THRESHOLD = 5`, `SIGNERS_MAX_DEPTH = 4`
-
-**Key exports:**
-- `compute_state_root(signers_root, threshold)` — reconstructs the on-chain `stateRoot`
-- `verify_multi_sig(signers, sigs, hash, threshold, signers_root, proof_lengths, proof_indices, proof_siblings, state_root)` — full M-of-N check
-
 ### `lib/zk_scope`
 
 Defines per-account transaction authorization rules (allowed targets, calldata patterns, value ranges). Proves that a transaction complies with a committed policy without disclosing the full rule set.
@@ -81,10 +68,7 @@ Defines per-account transaction authorization rules (allowed targets, calldata p
 | Circuit | Libraries used | Purpose |
 |---|---|---|
 | `zk_signers` | `zk_signer` | Prove a single authorized signer approved a transaction |
-| `zk_multi_sig_ecdsa_private_state_validation` | `zk_signer`, `zk_multisig` | Prove a signer set + threshold commitment is valid |
-| `zk_multi_sig_ecdsa` | `zk_signer`, `zk_multisig` | Prove M-of-N signers approved a transaction |
 | `zk_label_binding` | `zk_signer`, `zk_labels` | Prove a label is bound to a signer in the registry |
-| `zk_multi_sig_label_binding` | `zk_signer`, `zk_labels`, `zk_multisig` | Prove M-of-N signers with label membership |
 | `zk_scope_validation` | `zk_scope` | Prove a transaction satisfies the committed scope policy |
 
 ---
@@ -101,7 +85,7 @@ Deploy a `ZKMultiSigEcdsaFactory` and use the resulting proxy as a Safe owner. T
 
 Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Each account stores its own `stateRoot`. The module validates ERC-4337 `UserOperation`s by verifying a ZK proof.
 
-> The Solidity adapter contracts live in the [microchain-zk-signers](https://github.com/microchainlabs/microchain-zk-signers) repository.
+> The multi-sig circuits and the Solidity adapter contracts live in the [microchain-zk-signers](https://github.com/MicrochainLabs/microchain-zk-signers) repository.
 
 ---
 
@@ -128,7 +112,7 @@ nargo build
 nargo test
 
 # Run tests for a single circuit with output
-nargo test --package zk_multi_sig_ecdsa --show-output
+nargo test --package zk_signers --show-output
 ```
 
 ### 3. Generate the witness (execute)
@@ -136,17 +120,17 @@ nargo test --package zk_multi_sig_ecdsa --show-output
 The `Prover.toml` file in each circuit directory provides the private inputs.
 
 ```bash
-cd circuits/zk_multi_sig_ecdsa
+cd circuits/zk_signers
 nargo execute
-# Produces: target/zk_multi_sig_ecdsa.gz
+# Produces: target/zk_signers.gz
 ```
 
 ### 4. Generate a proof
 
 ```bash
 bb prove \
-  -b ./target/zk_multi_sig_ecdsa.json \
-  -w ./target/zk_multi_sig_ecdsa.gz \
+  -b ./target/zk_signers.json \
+  -w ./target/zk_signers.gz \
   -o ./target/proof
 # Produces: target/proof/proof
 ```
@@ -155,7 +139,7 @@ bb prove \
 
 ```bash
 bb write_vk \
-  -b ./target/zk_multi_sig_ecdsa.json \
+  -b ./target/zk_signers.json \
   -o ./target/vk
 # Produces: target/vk/vk
 ```
@@ -171,10 +155,10 @@ bb verify \
 
 ### Full one-liner (build → witness → prove → write_vk → verify)
 
-Replace `<circuit>` with any circuit name (e.g. `zk_multi_sig_ecdsa`, `zk_scope_validation`, ...).
+Replace `<circuit>` with any circuit name (e.g. `zk_signers`, `zk_scope_validation`, ...).
 
 ```bash
-CIRCUIT=zk_multi_sig_ecdsa
+CIRCUIT=zk_signers
 cd circuits/$CIRCUIT
 nargo build
 nargo execute

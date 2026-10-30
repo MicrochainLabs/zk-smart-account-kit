@@ -25,14 +25,6 @@ bb write_solidity_verifier -k target/zk_labeled_signer_vk/vk -o target/zk_labele
 # zk_signer_subset verifier
 bb write_vk -b target/zk_signer_subset.json -o target/zk_signer_subset_vk --oracle_hash keccak
 bb write_solidity_verifier -k target/zk_signer_subset_vk/vk  -o target/zk_signer_subset.sol
-
-# zk_multi_sig_ecdsa
-bb write_vk -b target/zk_multi_sig_ecdsa.json -o target/zk_multi_sig_ecdsa_vk --oracle_hash keccak
-bb write_solidity_verifier -k target/zk_multi_sig_ecdsa_vk/vk  -o target/zk_multi_sig_ecdsa.sol
-
-# zk_multi_sig_ecdsa
-bb write_vk -b target/zk_multi_sig_ecdsa_private_state_validation.json -o target/zk_multi_sig_ecdsa_private_state_validation_vk --oracle_hash keccak
-bb write_solidity_verifier -k target/zk_multi_sig_ecdsa_private_state_validation_vk/vk  -o target/zk_multi_sig_ecdsa_private_state_validation.sol
 ```
 
 > Note: newer `bb` releases (v3.x nightly) renamed the `contract` subcommand to

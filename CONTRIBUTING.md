@@ -59,14 +59,10 @@ cd ..
 # 5. (Optional) Regenerate Solidity verifiers from circuits
 #    Only needed if you modify the .nr circuit files
 cd noir
-bb write_vk -b ./target/zk_multi_sig_ecdsa.json \
-            -o ./target/zk_multi_sig_ecdsa --oracle_hash keccak
-bb write_vk -b ./target/zk_multi_sig_ecdsa_private_state_validation.json \
-            -o ./target/zk_multi_sig_ecdsa_private_state_validation --oracle_hash keccak
-bb write_solidity_verifier -k ./target/zk_multi_sig_ecdsa/vk \
-                           -o ./target/zk_multi_sig_ecdsa.sol
-bb write_solidity_verifier -k ./target/zk_multi_sig_ecdsa_private_state_validation/vk \
-                           -o ./target/zk_multi_sig_ecdsa_private_state_validation.sol
+bb write_vk -b ./target/zk_labeled_signer.json \
+            -o ./target/zk_labeled_signer --oracle_hash keccak
+bb write_solidity_verifier -k ./target/zk_labeled_signer/vk \
+                           -o ./target/zk_labeled_signer.sol
 cd ..
 
 # 6. Compile Solidity contracts
@@ -86,12 +82,12 @@ contracts/            Solidity smart contracts
   nexus/              Nexus/ERC-4337 module integration
   safe/               Safe wallet integration
 noir/                 Noir ZK circuits
-  zk_multi_sig_ecdsa/                  Transaction validation circuit
-  zk_multi_sig_ecdsa_private_state_validation/  State validation circuit
+  zk_signers/                          Single-signer circuit
+  zk_labeled_signer/                   Labeled signer circuit
+  zk_signer_subset/                    Signer subset circuit
 lib/                  Foundry submodule dependencies
 deploy/               Hardhat deployment scripts
 ignition/             Hardhat Ignition deployment modules
-zksafe/               Safe integration TypeScript utilities
 zknexus/              Nexus integration TypeScript utilities
 ```
 
@@ -111,10 +107,10 @@ zknexus/              Nexus integration TypeScript utilities
 - Circuit public inputs are part of the on-chain ABI — changes are breaking and require a discussion issue first.
 - Test circuits with `nargo test` inside the circuit directory before opening a PR.
 
-### TypeScript (`zksafe/`, `zknexus/`, `deploy/`)
+### TypeScript (`zknexus/`, `deploy/`)
 
 - The project uses `viem` for Ethereum interactions — do not introduce `ethers.js`.
-- Follow existing patterns in `zksafe/zksafe.ts` and `zknexus/zknexus.ts`.
+- Follow existing patterns in `zknexus/zklabeled.ts`.
 
 ### Adding a new ERC-8039 verifier adapter
 
@@ -137,8 +133,8 @@ npx hardhat test
 forge test
 
 # Noir circuit tests
-cd noir/zk_multi_sig_ecdsa && nargo test
-cd noir/zk_multi_sig_ecdsa_private_state_validation && nargo test
+cd noir/circuits/zk_signers && nargo test
+cd noir/circuits/zk_labeled_signer && nargo test
 ```
 
 ---

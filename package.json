@@ -1,9 +1,9 @@
 {
-  "name": "zksafe",
-  "version": "2.0.0",
-  "description": "Safe with ZK Signing",
+  "name": "zk-smart-account-kit",
+  "version": "0.0.1",
+  "description": "Composable zero-knowledge primitives for smart accounts, built with Noir",
   "main": "index.js",
-  "author": "Valeriy Zamaraiev <v@1kx.capital>",
+  "author": "Microchain labs",
   "license": "Apache-2.0",
   "scripts": {
     "compile": "npx hardhat compile",

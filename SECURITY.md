@@ -18,7 +18,7 @@ The following components are in scope for security reports:
 - **Solidity contracts** (`contracts/`): logic bugs, access control issues, reentrancy, incorrect proof verification, state root manipulation
 - **Noir circuits** (`noir/`): constraint soundness, under-constrained witnesses, signature malleability, Merkle proof forgery
 - **ERC-8039 verifier adapters**: incorrect proof verification, magic value spoofing
-- **TypeScript integration code** (`zksafe/`, `zknexus/`): issues that could cause incorrect proof generation or state root construction
+- **TypeScript integration code** (`zknexus/`): issues that could cause incorrect proof generation or state root construction
 
 The following are **out of scope**:
 
