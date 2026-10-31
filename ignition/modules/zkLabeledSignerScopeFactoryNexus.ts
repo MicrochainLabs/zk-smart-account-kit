@@ -4,7 +4,7 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
  * Deployment module for the ZK Labeled Signer + Scope Factory pattern
  *
  * Deploys, in order:
- *   1. ZKTranscriptLib   — shared library, deployed once and reused for both HonkVerifiers
+ *   1. ZKTranscriptLib + RelationsLib — shared libraries, deployed once and reused for both HonkVerifiers
  *                          below (Noir codegens an identical copy of this library into every
  *                          circuit's .sol file; Hardhat Ignition/solc link libraries by bare
  *                          name, so one deployment can be linked into both artifacts).
@@ -79,6 +79,13 @@ export default buildModule("ZKLabeledSignerScopeFactory_v1", (m) => {
     { id: "zkTranscriptLib" }
   );
 
+  // RelationsLib is also codegen'd by bb >= 5.0 as an external library (identical across
+  // circuits, so it is shared the same way as ZKTranscriptLib).
+  const relationsLib = m.library(
+    "noir/target/zk_labeled_signer_scope.sol:RelationsLib",
+    { id: "relationsLib" }
+  );
+
   // ============================================================================
   // 2. HonkVerifier for zk_labeled_signer_scope
   // ============================================================================
@@ -88,7 +95,7 @@ export default buildModule("ZKLabeledSignerScopeFactory_v1", (m) => {
     [],
     {
       id: "labeledSignerScopeHonkVerifier",
-      libraries: { ZKTranscriptLib: zkTranscriptLib },
+      libraries: { ZKTranscriptLib: zkTranscriptLib, RelationsLib: relationsLib },
     }
   );
 
@@ -108,7 +115,7 @@ export default buildModule("ZKLabeledSignerScopeFactory_v1", (m) => {
     [],
     {
       id: "signerSubsetHonkVerifier",
-      libraries: { ZKTranscriptLib: zkTranscriptLib },
+      libraries: { ZKTranscriptLib: zkTranscriptLib, RelationsLib: relationsLib },
     }
   );
 

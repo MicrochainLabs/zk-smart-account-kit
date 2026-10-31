@@ -31,11 +31,11 @@ Install the following tools before starting:
 | [Node.js](https://nodejs.org/) | v18+ | TypeScript tooling |
 | [pnpm](https://pnpm.io/) | latest | Package manager |
 | [Foundry](https://book.getfoundry.sh/getting-started/installation) (`forge`, `cast`) | latest | Solidity compilation & testing |
-| [Nargo](https://noir-lang.org/docs/getting_started/installation/) | `1.0.0-beta.18` | Noir circuit compilation |
-| [Barretenberg CLI](https://github.com/AztecProtocol/aztec-packages/tree/master/barretenberg) (`bb`) | `3.0.0-nightly.20260102` | Proof generation & Solidity verifier generation |
+| [Nargo](https://noir-lang.org/docs/getting_started/installation/) | `1.0.0-beta.22` | Noir circuit compilation |
+| [Barretenberg CLI](https://github.com/AztecProtocol/aztec-packages/tree/master/barretenberg) (`bb`) | `5.0.0-nightly.20260522` | Proof generation & Solidity verifier generation |
 | Git | any | Source control |
 
-> **Note on Noir/bb versions**: The circuits currently target Noir `1.0.0-beta.18` (they do not yet compile with `beta.22`). CI pins the versions above (see `.github/workflows/ci.yml`); use `noirup -v 1.0.0-beta.18` and `bbup -v 3.0.0-nightly.20260102` locally.
+> **Note on Noir/bb versions**: CI pins the versions above (see `.github/workflows/ci.yml`); use `noirup -v 1.0.0-beta.22` and `bbup -v 5.0.0-nightly.20260522` locally.
 
 ---
 

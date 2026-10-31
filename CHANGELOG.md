@@ -10,6 +10,9 @@ Releases are published automatically by `.github/workflows/release.yml` when the
 
 ### Changed
 
+- Upgraded Noir to `1.0.0-beta.22` and Barretenberg (`bb`, `@aztec/bb.js`) to `5.0.0-nightly.20260522`, with `@noir-lang/noir_js` `1.0.0-beta.22`.
+- Circuits: Merkle path indices are now `bool` instead of `u1` (breaking ABI change for proof inputs); `binary_merkle_root` is replaced by the new `merkle_tree` lib (zk-kit `merkle-trees` v0.0.3); `poseidon` v0.3.0, `keccak256` v0.1.2.
+- Generated HonkVerifiers now link an external `RelationsLib`; Ignition factory modules deploy and link it.
 - Relicensed the project to Apache-2.0 (previously MIT `LICENSE` with mixed MIT/LGPL-3.0 SPDX headers).
 - `foundry.toml` now pins solc `0.8.29`, `cancun` and the optimizer (`runs = 20`, matching Hardhat) so `forge build` succeeds.
 

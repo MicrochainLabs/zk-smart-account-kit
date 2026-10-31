@@ -1,6 +1,7 @@
 [workspace]
 members = [
   # Libraries — reusable circuit primitives
+  "lib/merkle_tree",
   "lib/zk_signer",
   "lib/zk_labels",
   "lib/zk_scope",

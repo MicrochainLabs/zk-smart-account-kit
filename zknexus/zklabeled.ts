@@ -184,7 +184,7 @@ export function buildSubsetRoot(subsetSigners: LabeledSigner[]): bigint {
 export function getSubsetTreeProof(
     leafIndex: number,
     subsetSigners: LabeledSigner[]
-): { siblings: bigint[]; indices: number[]; depth: number } {
+): { siblings: bigint[]; indices: boolean[]; depth: number } {
     if (leafIndex < 0 || leafIndex >= SUBSET_TREE_LEAVES) {
         throw new Error(`Leaf index ${leafIndex} out of range [0, ${SUBSET_TREE_LEAVES - 1}]`);
     }
@@ -207,24 +207,24 @@ export function getSubsetTreeProof(
 
     // Path from leaf to root (depth = 3)
     const siblings: bigint[] = [];
-    const indices:  number[] = [];
+    const indices:  boolean[] = [];
 
     // Step 0 — leaf level
     const isRight0 = leafIndex % 2 === 1;
     siblings.push(isRight0 ? level0[leafIndex - 1] : level0[leafIndex + 1]);
-    indices.push(isRight0 ? 1 : 0);
+    indices.push(isRight0);
 
     // Step 1 — level 1
     const idx1     = Math.floor(leafIndex / 2);
     const isRight1 = idx1 % 2 === 1;
     siblings.push(isRight1 ? level1[idx1 - 1] : level1[idx1 + 1]);
-    indices.push(isRight1 ? 1 : 0);
+    indices.push(isRight1);
 
     // Step 2 — level 2
     const idx2     = Math.floor(idx1 / 2);
     const isRight2 = idx2 % 2 === 1;
     siblings.push(isRight2 ? level2[idx2 - 1] : level2[idx2 + 1]);
-    indices.push(isRight2 ? 1 : 0);
+    indices.push(isRight2);
 
     return { siblings, indices, depth: 3 };
 }
@@ -255,7 +255,7 @@ function getLabeledEntryProof(
     tree: LeanIMT,
     entry: LabeledEntry,
     maxDepth: number = LABELS_MAX_DEPTH
-): { siblings: bigint[]; indices: number[]; depth: number } {
+): { siblings: bigint[]; indices: boolean[]; depth: number } {
     const leaf  = computeLabelLeaf(entry.label, entry.address);
     const leafIdx = tree.indexOf(leaf);
     if (leafIdx === -1) {
@@ -266,10 +266,10 @@ function getLabeledEntryProof(
     const proof = tree.generateProof(leafIdx);
 
     const siblings: bigint[] = [];
-    const indices:  number[] = [];
+    const indices:  boolean[] = [];
     for (let i = 0; i < proof.siblings.length; i++) {
         siblings.push(proof.siblings[i]);
-        indices.push((proof.index >> i) & 1);
+        indices.push(((proof.index >> i) & 1) === 1);
     }
 
     return { siblings, indices, depth: proof.siblings.length };
@@ -569,7 +569,7 @@ export async function proveSignerSubset(
     // ── Collect proof inputs for each signer ──────────────────────────────
     const nilProof = {
         length:   0,
-        indices:  padArray([] as number[],  LABELS_MAX_DEPTH, 0),
+        indices:  padArray([] as boolean[], LABELS_MAX_DEPTH, false),
         siblings: padArray([] as string[],  LABELS_MAX_DEPTH, "0x0"),
     };
 
@@ -577,7 +577,7 @@ export async function proveSignerSubset(
     const signerAddressBytes: number[][] = [];
     const isActive:           boolean[]  = [];
     const mainProofLengths:   number[]   = [];
-    const mainProofIndices:   number[][] = [];
+    const mainProofIndices:   boolean[][] = [];
     const mainProofSiblings:  string[][] = [];
 
     for (let i = 0; i < MAX_SUBSET_SIGNERS; i++) {
@@ -599,7 +599,7 @@ export async function proveSignerSubset(
             signerAddressBytes.push(Array.from(toBytes(s.address as Hex)));
             isActive.push(true);
             mainProofLengths.push(proof.depth);
-            mainProofIndices.push(padArray(proof.indices, LABELS_MAX_DEPTH, 0));
+            mainProofIndices.push(padArray(proof.indices, LABELS_MAX_DEPTH, false));
             mainProofSiblings.push(padArray(proof.siblings.map(v => toHex(v)), LABELS_MAX_DEPTH, "0x0"));
         } else {
             // Inactive (padding) slot
@@ -764,14 +764,14 @@ export async function proveLabeledSignerTx(
         signature: sigRS,
         signer_label_bytes:    Array.from(labelToBytes(signerLabel)),
         signer_proof_length:   signerProof.depth,
-        signer_proof_indices:  padArray(signerProof.indices,                        SIGNERS_MAX_DEPTH, 0),
+        signer_proof_indices:  padArray(signerProof.indices,                        SIGNERS_MAX_DEPTH, false),
         signer_proof_siblings: padArray(signerProof.siblings.map(v => toHex(v)),   SIGNERS_MAX_DEPTH, "0x0"),
 
         // Destination private inputs
         dest_address_bytes:        Array.from(toBytes(destAddress as Hex)),
         dest_label_bytes:          Array.from(labelToBytes(destLabel)),
         dest_label_proof_length:   destProof.depth,
-        dest_label_proof_indices:  padArray(destProof.indices,                       LABELS_MAX_DEPTH, 0),
+        dest_label_proof_indices:  padArray(destProof.indices,                       LABELS_MAX_DEPTH, false),
         dest_label_proof_siblings: padArray(destProof.siblings.map(v => toHex(v)), LABELS_MAX_DEPTH, "0x0"),
 
         // Public inputs

@@ -37,7 +37,7 @@ fn main(
 
     // -- Private: Merkle proof for the rule ----------------------------------
     proof_length:   u32,
-    proof_indices:  [u1; SCOPE_MAX_DEPTH],
+    proof_indices:  [bool; SCOPE_MAX_DEPTH],
     proof_siblings: [Field; SCOPE_MAX_DEPTH],
 
     // -- Public: transaction details -----------------------------------------
@@ -96,7 +96,7 @@ fn test_single_rule_exact_params() {
     let rule_leaf     = compute_rule_leaf(target_field, selector_field, value_max, params_hash);
     let calldata_hash = compute_calldata_hash(param_values);
 
-    // Single-rule registry: proof_length = 0 => binary_merkle_root returns leaf itself
+    // Single-rule registry: proof_length = 0 => merkle_root_with_depth returns leaf itself
     let scope_root = rule_leaf;
 
     main(
@@ -106,7 +106,7 @@ fn test_single_rule_exact_params() {
         constraints,
         param_values,
         0,
-        [0; SCOPE_MAX_DEPTH],
+        [false; SCOPE_MAX_DEPTH],
         [0; SCOPE_MAX_DEPTH],
         target_field,
         selector_field,
@@ -144,7 +144,7 @@ fn test_single_rule_range_param() {
         constraints,
         param_values,
         0,
-        [0; SCOPE_MAX_DEPTH],
+        [false; SCOPE_MAX_DEPTH],
         [0; SCOPE_MAX_DEPTH],
         target_field,
         selector_field,
