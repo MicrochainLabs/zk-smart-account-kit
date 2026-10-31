@@ -281,7 +281,7 @@ function getLabeledScopeRuleProof(
     tree: LeanIMT,
     rule: LabeledScopeRule,
     maxDepth: number = SCOPE_MAX_DEPTH
-): { siblings: bigint[]; indices: number[]; depth: number } {
+): { siblings: bigint[]; indices: boolean[]; depth: number } {
     const leaf    = computeLabeledRuleLeaf(rule);
     const leafIdx = tree.indexOf(leaf);
     if (leafIdx === -1) {
@@ -293,10 +293,10 @@ function getLabeledScopeRuleProof(
     const proof = tree.generateProof(leafIdx);
 
     const siblings: bigint[] = [];
-    const indices:  number[] = [];
+    const indices:  boolean[] = [];
     for (let i = 0; i < proof.siblings.length; i++) {
         siblings.push(proof.siblings[i]);
-        indices.push((proof.index >> i) & 1);
+        indices.push(((proof.index >> i) & 1) === 1);
     }
 
     return { siblings, indices, depth: proof.siblings.length };
@@ -699,7 +699,7 @@ export async function proveLabeledSignerScopeTx(
         signature: sigRS,
         signer_label_bytes:    Array.from(labelToBytes(signerLabel)),
         signer_proof_length:   signerProof.depth,
-        signer_proof_indices:  padArray(signerProof.indices,                      SIGNERS_MAX_DEPTH, 0),
+        signer_proof_indices:  padArray(signerProof.indices,                      SIGNERS_MAX_DEPTH, false),
         signer_proof_siblings: padArray(signerProof.siblings.map(v => toHex(v)), SIGNERS_MAX_DEPTH, "0x0"),
 
         // Destination + scope rule private inputs
@@ -716,7 +716,7 @@ export async function proveLabeledSignerScopeTx(
         })),
 
         scope_proof_length:   ruleProof.depth,
-        scope_proof_indices:  padArray(ruleProof.indices,                      SCOPE_MAX_DEPTH, 0),
+        scope_proof_indices:  padArray(ruleProof.indices,                      SCOPE_MAX_DEPTH, false),
         scope_proof_siblings: padArray(ruleProof.siblings.map(v => toHex(v)), SCOPE_MAX_DEPTH, "0x0"),
 
         // Public inputs

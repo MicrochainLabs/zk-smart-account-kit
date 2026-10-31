@@ -25,7 +25,7 @@ fn main(
     pubkey:         PubKey,
     signature:      Signature,
     proof_length:   u32,
-    proof_index:    [u1; SIGNERS_MAX_DEPTH],
+    proof_index:    [bool; SIGNERS_MAX_DEPTH],
     proof_siblings: [Field; SIGNERS_MAX_DEPTH],
 
     // Public inputs
@@ -79,7 +79,7 @@ fn test_ceo_single_signer() {
     // 1-signer tree: root == leaf (depth = 0, no siblings)
     let signers_root: Field = 7883074409468045280407067478175608582487155714151013737870117867970375847717;
     let proof_length: u32 = 0;
-    let proof_index:    [u1; 4] = [0, 0, 0, 0];
+    let proof_index:    [bool; 4] = [false, false, false, false];
     let proof_siblings: [Field; 4] = [0, 0, 0, 0];
 
     main(pubkey, signature, proof_length, proof_index, proof_siblings, txn_hash, signers_root);

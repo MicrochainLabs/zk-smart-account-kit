@@ -25,6 +25,7 @@ zk-smart-account-kit/
 ├── Nargo.toml                   # Noir workspace manifest
 │
 ├── lib/                         # Reusable circuit libraries (type = "lib")
+│   ├── merkle_tree/             # Variable-depth Poseidon Merkle root (zk-kit merkle-trees)
 │   ├── zk_signer/               # ECDSA address recovery inside ZK
 │   ├── zk_labels/               # Privacy-preserving identity / role naming
 │   └── zk_scope/                # Programmable transaction access control
@@ -55,7 +56,7 @@ The cryptographic foundation. Verifies secp256k1 ECDSA signatures inside a Noir 
 
 Binds human-readable labels (e.g. `"cfo"`, `"auditor"`, `"treasury"`) to Signer identifier(e.g. Ethereum addresse) in a Merkle tree. Proves label membership without revealing the full registry.
 
-**Dependencies:** `binary_merkle_root`, `poseidon`
+**Dependencies:** `merkle_tree`, `poseidon`
 
 **Key exports:**
 - `verify_label_membership(label, address, root, proof)` — Merkle membership proof
@@ -97,8 +98,8 @@ Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Eac
 
 | Tool | Version | Install |
 |---|---|---|
-| [Noir / nargo](https://noir-lang.org) | `1.0.0-beta.18` | `noirup -v 1.0.0-beta.18` |
-| [Barretenberg / bb](https://github.com/AztecProtocol/barretenberg) | `3.0.0-nightly.20260102` | `bbup -v 3.0.0-nightly.20260102` |
+| [Noir / nargo](https://noir-lang.org) | `1.0.0-beta.22` | `noirup -v 1.0.0-beta.22` |
+| [Barretenberg / bb](https://github.com/AztecProtocol/barretenberg) | `5.0.0-nightly.20260522` | `bbup -v 5.0.0-nightly.20260522` |
 
 ## Getting Started
 
@@ -178,7 +179,7 @@ bb verify -k ./target/vk/vk -p ./target/proof/proof
 All circuits target the **BN254** scalar field and use:
 
 - **Poseidon1** for signer leaves; **Poseidon2** for state roots, label leaves, scope rule leaves
-- **Binary Merkle Tree** (`binary_merkle_root`) for membership proofs
+- **Binary Merkle Tree** (`merkle_tree::merkle_root_with_depth`, built on the zk-kit `merkle-trees` library; path indices are `bool`s) for membership proofs
 - **secp256k1** for ECDSA signature verification
 - **UltraHonk / Barretenberg** as the default backend
 
