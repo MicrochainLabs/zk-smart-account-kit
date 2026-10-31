@@ -8,3 +8,6 @@ solc_version = '0.8.29'
 evm_version = 'cancun'
 optimizer = true
 optimizer_runs = 20
+# Vendored libs nest their own forge-std/ds-test; recent forge turns those into remapping
+# contexts, which hardhat-foundry rejects. remappings.txt is the single source of truth.
+auto_detect_remappings = false
