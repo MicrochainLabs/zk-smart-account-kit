@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Microchain ZK Signers is currently in pre-production development. Security fixes are applied to the latest version on `main`.
+zk-smart-account-kit is currently in pre-production development. Security fixes are applied to the latest version on `main`.
 
 | Version | Supported |
 |---------|-----------|
@@ -15,8 +15,8 @@ Microchain ZK Signers is currently in pre-production development. Security fixes
 
 The following components are in scope for security reports:
 
-- **Solidity contracts** (`contracts/`): logic bugs, access control issues, reentrancy, incorrect proof verification, state root manipulation
-- **Noir circuits** (`noir/`): constraint soundness, under-constrained witnesses, signature malleability, Merkle proof forgery
+- **Solidity contracts** (`contracts/`): logic bugs, access control issues, reentrancy, incorrect proof verification, validator/factory misconfiguration
+- **Noir circuits and libraries** (`noir/`): constraint soundness, under-constrained witnesses, signature malleability, Merkle proof forgery, label/scope binding flaws
 - **ERC-8039 verifier adapters**: incorrect proof verification, magic value spoofing
 - **TypeScript integration code** (`zknexus/`): issues that could cause incorrect proof generation or state root construction
 

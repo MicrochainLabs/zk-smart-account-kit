@@ -1,5 +1,9 @@
 # zk-smart-account-kit
 
+[![CI](https://github.com/MicrochainLabs/zk-smart-account-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/MicrochainLabs/zk-smart-account-kit/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/MicrochainLabs/zk-smart-account-kit?include_prereleases)](https://github.com/MicrochainLabs/zk-smart-account-kit/releases)
+
 **Composable zero-knowledge primitives for smart accounts — built with Noir**
 
 A suite of Noir circuit libraries and executable circuits for privacy-preserving identity, threshold signatures, and programmable access control. Designed to integrate natively with [Safe](https://safe.global) and [Nexus (ERC-7579)](https://erc7579.com) smart accounts via the [ERC-8039](https://eips.ethereum.org/EIPS/eip-8039) proof verification standard.
@@ -182,7 +186,17 @@ All circuits target the **BN254** scalar field and use:
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party dependencies (Safe, Nexus, OpenZeppelin, Barretenberg, ...) remain under their own licenses.
+
+---
+
+## Security
+
+Please report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Release history is in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

@@ -1,6 +1,6 @@
-# Contributing to Microchain ZK Signers
+# Contributing to zk-smart-account-kit
 
-Thank you for your interest in contributing! This protocol sits at the intersection of ZK cryptography, Solidity smart contracts, and account abstraction — all contributions are welcome.
+Thank you for your interest in contributing! This kit provides reusable Noir circuits and ERC-8039 verifier/validator contracts for privacy-preserving smart accounts — all contributions are welcome.
 
 ## Table of Contents
 
@@ -10,6 +10,7 @@ Thank you for your interest in contributing! This protocol sits at the intersect
 - [Project Structure](#project-structure)
 - [Making Changes](#making-changes)
 - [Running Tests](#running-tests)
+- [Branching Model](#branching-model)
 - [Submitting a Pull Request](#submitting-a-pull-request)
 - [Good First Issues](#good-first-issues)
 
@@ -17,7 +18,7 @@ Thank you for your interest in contributing! This protocol sits at the intersect
 
 ## Code of Conduct
 
-Be respectful, constructive, and collaborative. Harassment of any kind is not tolerated.
+This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md). By participating you agree to uphold it. Report unacceptable behavior to the maintainers at **security@microchainlabs.xyz**.
 
 ---
 
@@ -30,11 +31,11 @@ Install the following tools before starting:
 | [Node.js](https://nodejs.org/) | v18+ | TypeScript tooling |
 | [pnpm](https://pnpm.io/) | latest | Package manager |
 | [Foundry](https://book.getfoundry.sh/getting-started/installation) (`forge`, `cast`) | latest | Solidity compilation & testing |
-| [Nargo](https://noir-lang.org/docs/getting_started/installation/) | compatible with `1.0.0-beta.18` | Noir circuit compilation |
-| [Barretenberg CLI](https://github.com/AztecProtocol/aztec-packages/tree/master/barretenberg) (`bb`) | latest nightly | Proof generation & Solidity verifier generation |
+| [Nargo](https://noir-lang.org/docs/getting_started/installation/) | `1.0.0-beta.18` | Noir circuit compilation |
+| [Barretenberg CLI](https://github.com/AztecProtocol/aztec-packages/tree/master/barretenberg) (`bb`) | `3.0.0-nightly.20260102` | Proof generation & Solidity verifier generation |
 | Git | any | Source control |
 
-> **Note on Noir/bb versions**: The project uses `@noir-lang/noir_js@1.0.0-beta.18` and `@aztec/bb.js@3.0.0-nightly.20260102`. Use matching Nargo and `bb` CLI versions to avoid circuit compatibility issues.
+> **Note on Noir/bb versions**: The circuits currently target Noir `1.0.0-beta.18` (they do not yet compile with `beta.22`). CI pins the versions above (see `.github/workflows/ci.yml`); use `noirup -v 1.0.0-beta.18` and `bbup -v 3.0.0-nightly.20260102` locally.
 
 ---
 
@@ -42,30 +43,27 @@ Install the following tools before starting:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/microchainlabs/microchain-zk-signers.git
-cd microchain-zk-signers
+git clone https://github.com/MicrochainLabs/zk-smart-account-kit.git
+cd zk-smart-account-kit
 
-# 2. Initialize Foundry submodules
-forge install
-
-# 3. Install Node.js dependencies
+# 2. Install Node.js dependencies
 pnpm install
 
-# 4. Compile Noir circuits
+# 3. Compile Noir circuits
 cd noir
-nargo compile
+nargo compile --workspace
 cd ..
 
-# 5. (Optional) Regenerate Solidity verifiers from circuits
-#    Only needed if you modify the .nr circuit files
+# 4. Generate Solidity verifiers from the circuits
+#    (required before compiling the contracts; noir/target is gitignored)
 cd noir
-bb write_vk -b ./target/zk_labeled_signer.json \
-            -o ./target/zk_labeled_signer --oracle_hash keccak
-bb write_solidity_verifier -k ./target/zk_labeled_signer/vk \
-                           -o ./target/zk_labeled_signer.sol
+for circuit in zk_labeled_signer zk_labeled_signer_scope zk_signer_subset; do
+  bb write_vk -b "./target/${circuit}.json" -o "./target/${circuit}" --oracle_hash keccak
+  bb write_solidity_verifier -k "./target/${circuit}/vk" -o "./target/${circuit}.sol"
+done
 cd ..
 
-# 6. Compile Solidity contracts
+# 5. Compile Solidity contracts
 npx hardhat compile
 # or
 forge build
@@ -79,13 +77,12 @@ forge build
 contracts/            Solidity smart contracts
   ERC1271/            Signature validation interface
   ERC8039/            Proof-system agnostic verifier adapters
-  nexus/              Nexus/ERC-4337 module integration
-  safe/               Safe wallet integration
-noir/                 Noir ZK circuits
-  zk_signers/                          Single-signer circuit
-  zk_labeled_signer/                   Labeled signer circuit
-  zk_signer_subset/                    Signer subset circuit
-lib/                  Foundry submodule dependencies
+  nexus/              Nexus (ERC-7579) validator modules and factories
+noir/                 Noir workspace
+  lib/                Reusable circuit libraries (zk_signer, zk_labels, zk_scope)
+  circuits/           Executable circuits (zk_signers, zk_labeled_signer,
+                      zk_labeled_signer_scope, zk_signer_subset, ...)
+lib/                  Vendored Solidity dependencies
 deploy/               Hardhat deployment scripts
 ignition/             Hardhat Ignition deployment modules
 zknexus/              Nexus integration TypeScript utilities
@@ -103,9 +100,9 @@ zknexus/              Nexus integration TypeScript utilities
 
 ### Noir circuits (`noir/`)
 
-- Changes to circuit logic **must** be accompanied by regenerated Solidity verifiers (see step 5 above).
+- Changes to circuit logic **must** be reflected in the generated Solidity verifiers (see step 4 above); CI regenerates them from source.
 - Circuit public inputs are part of the on-chain ABI — changes are breaking and require a discussion issue first.
-- Test circuits with `nargo test` inside the circuit directory before opening a PR.
+- Test circuits with `nargo test --workspace` inside `noir/` before opening a PR.
 
 ### TypeScript (`zknexus/`, `deploy/`)
 
@@ -126,29 +123,46 @@ This is one of the most impactful contributions. To add support for a new proof 
 ## Running Tests
 
 ```bash
-# Hardhat tests (TypeScript, full integration)
+# Noir circuit tests (run by CI)
+cd noir && nargo test --workspace
+
+# Solidity build (run by CI; needs the generated verifiers, see step 4)
+forge build --sizes
+
+# Hardhat / Foundry tests, once a test suite exists in test/
 npx hardhat test
-
-# Foundry tests (Solidity unit tests, faster)
 forge test
-
-# Noir circuit tests
-cd noir/circuits/zk_signers && nargo test
-cd noir/circuits/zk_labeled_signer && nargo test
 ```
+
+---
+
+## Branching Model
+
+| Branch | Purpose |
+|---|---|
+| `main` | Latest released code. Every release is a tagged commit (`vX.Y.Z`). Protected: no direct pushes. |
+| `develop` | Integration branch for the next release. **All contributor PRs target this branch.** Protected: PR-only, CI and review required. |
+
+Short-lived branches:
+
+- `feat/*`, `fix/*`, `docs/*`, `test/*`, `chore/*`: branch from `develop`, merge back into `develop` via PR (squash-merge).
+- `release/x.y.z` (maintainers): branch from `develop` to stabilise a release, then merge into `main`, tag, and merge back into `develop`.
+- `hotfix/*` (maintainers): branch from `main` for urgent fixes (e.g. security), merge into `main`, tag a patch release, then merge back into `develop`.
+
+Releases are cut by merging `develop` (or a `release/*` branch) into `main` with a merge commit. To release, bump `version` in `package.json` in the PR that goes to `main`. Once CI passes on `main`, the [Release workflow](.github/workflows/release.yml) creates the `vX.Y.Z` tag and a GitHub Release with auto-generated notes plus the compiled circuits and Solidity verifiers. If the version is unchanged (tag already exists), no release is created. Versions containing a hyphen (e.g. `2.1.0-rc.1`) are published as pre-releases. Security issues must **not** be reported through public PRs; see [SECURITY.md](./SECURITY.md).
 
 ---
 
 ## Submitting a Pull Request
 
-1. **Fork** the repository and create a branch from `main`:
+1. **Fork** the repository and create a branch from `develop`:
    ```bash
    git checkout -b feat/your-feature-name
    ```
 2. Make your changes and **commit with clear messages**.
 3. Ensure **all tests pass** before opening a PR.
-4. If you modified Noir circuits, include **regenerated Solidity verifiers** in the PR.
-5. Open a PR against `main` and fill in the pull request template.
+4. Circuit changes: make sure `nargo test --workspace` and the verifier generation step pass (CI runs both).
+5. Open a PR against `develop` and fill in the pull request template.
 6. A maintainer will review and may request changes.
 
 ### Commit message conventions

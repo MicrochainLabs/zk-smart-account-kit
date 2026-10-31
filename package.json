@@ -5,6 +5,15 @@
   "main": "index.js",
   "author": "Microchain labs",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MicrochainLabs/zk-smart-account-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MicrochainLabs/zk-smart-account-kit/issues"
+  },
+  "homepage": "https://github.com/MicrochainLabs/zk-smart-account-kit#readme",
+  "keywords": ["zero-knowledge", "noir", "smart-account", "account-abstraction", "erc-8039", "safe", "erc-7579"],
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test"
