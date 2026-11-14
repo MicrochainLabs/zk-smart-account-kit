@@ -1,7 +1,5 @@
-use dep::std;
+use merkle_tree::merkle_root_with_depth;
 use poseidon::poseidon::bn254::hash_1 as poseidon1;
-use poseidon::poseidon::bn254::hash_2 as poseidon2;
-use binary_merkle_root::binary_merkle_root;
 use keccak256::keccak256;
 
 // --- Constants ---------------------------------------------------------------
@@ -122,7 +120,7 @@ pub fn verify_single_signer(
     txn_hash:       Hash,
     signers_root:   Field,
     proof_length:   u32,
-    proof_index:    [u1; SIGNERS_MAX_DEPTH],
+    proof_index:    [bool; SIGNERS_MAX_DEPTH],
     proof_siblings: [Field; SIGNERS_MAX_DEPTH],
 ) {
     // 1. Verify ECDSA - derives the signer's Ethereum address
@@ -132,8 +130,7 @@ pub fn verify_single_signer(
     let leaf = signer_leaf(address);
 
     // 3. Verify Merkle membership in the signers tree
-    let computed_root = binary_merkle_root(
-        poseidon2,
+    let computed_root = merkle_root_with_depth(
         leaf,
         proof_length,
         proof_index,

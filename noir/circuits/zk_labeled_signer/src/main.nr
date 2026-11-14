@@ -48,14 +48,14 @@ fn main(
     signature:              Signature,
     signer_label_bytes:     [u8; LABEL_NAME_BYTES],   // e.g. "treasury-lead" - never public
     signer_proof_length:    u32,
-    signer_proof_indices:   [u1; SIGNERS_MAX_DEPTH],
+    signer_proof_indices:   [bool; SIGNERS_MAX_DEPTH],
     signer_proof_siblings:  [Field; SIGNERS_MAX_DEPTH],
 
     // Destination label private inputs
     dest_address_bytes:     [u8; 20],
     dest_label_bytes:       [u8; LABEL_NAME_BYTES],   // e.g. "alice" or "uniswap-v3" - never public
     dest_label_proof_length:   u32,
-    dest_label_proof_indices:  [u1; LABELS_MAX_DEPTH],
+    dest_label_proof_indices:  [bool; LABELS_MAX_DEPTH],
     dest_label_proof_siblings: [Field; LABELS_MAX_DEPTH],
 
     // Public inputs
@@ -143,7 +143,7 @@ fn test_single_contact_call() {
     let signers_root = label_leaf(signer_label_field, signer_addr_field);
 
     let signer_proof_length:   u32       = 0;
-    let signer_proof_indices:  [u1; 4]   = [0, 0, 0, 0];
+    let signer_proof_indices:  [bool; 4] = [false, false, false, false];
     let signer_proof_siblings: [Field; 4] = [0, 0, 0, 0];
 
     // Destination: "alice" contact at address 0xdeadbeef...0001
@@ -163,7 +163,7 @@ fn test_single_contact_call() {
     let registry_root    = label_leaf(dest_label_field, dest_addr_field);
 
     let dest_label_proof_length:   u32       = 0;
-    let dest_label_proof_indices:  [u1; 4]   = [0, 0, 0, 0];
+    let dest_label_proof_indices:  [bool; 4] = [false, false, false, false];
     let dest_label_proof_siblings: [Field; 4] = [0, 0, 0, 0];
 
     let dest_address_field = dest_addr_field;

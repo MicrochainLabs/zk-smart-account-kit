@@ -16,7 +16,7 @@ fn main(
     address_bytes: [u8; 20],
     label_bytes: [u8; LABEL_NAME_BYTES],
     merkle_proof_length: u32,
-    merkle_proof_indices: [u1; LABELS_MAX_DEPTH],
+    merkle_proof_indices: [bool; LABELS_MAX_DEPTH],
     merkle_proof_siblings: [Field; LABELS_MAX_DEPTH],
     // Public inputs
     registry_root: pub Field,
@@ -52,7 +52,7 @@ fn test_main() {
     let address_field = address_to_field(address_bytes);
     let commitment = label_leaf(label_field, address_field);
 
-    // Single-leaf registry: proof_length = 0 => binary_merkle_root returns the leaf itself,
+    // Single-leaf registry: proof_length = 0 => merkle_root_with_depth returns the leaf itself,
     // so registry_root == label_commitment == commitment.
     // In production, registry_root != label_commitment: the root commits to many leaves
     // and a real Merkle proof (proof_length > 0, siblings) links the leaf to the root.
@@ -60,7 +60,7 @@ fn test_main() {
         address_bytes,
         label_bytes,
         0,
-        [0, 0, 0, 0],
+        [false, false, false, false],
         [0, 0, 0, 0],
         commitment, // registry_root (== leaf only because proof_length = 0)
         commitment, // label_commitment
@@ -101,7 +101,7 @@ fn test_main_multi_leaf() {
         address0_bytes,
         label0_bytes,
         1,               // proof_length = 1 (depth-1 tree)
-        [0, 0, 0, 0],    // index[0] = 0: leaf0 is the left child
+        [false, false, false, false],    // index[0] = false: leaf0 is the left child
         [leaf1, 0, 0, 0], // sibling at depth 0 is leaf1; unused slots are 0
         registry_root,
         leaf0,           // label_commitment = leaf0; registry_root != leaf0

@@ -1,6 +1,6 @@
 use poseidon::poseidon::bn254::hash_2 as poseidon2;
 use poseidon::poseidon::bn254::hash_4 as poseidon4;
-use binary_merkle_root::binary_merkle_root;
+use merkle_tree::merkle_root_with_depth;
 
 // --- Constants ----------------------------------------------------------------
 
@@ -169,14 +169,13 @@ pub fn verify_scope_membership(
     // On-chain scope root and Merkle proof
     scope_root:        Field,
     proof_length:      u32,
-    proof_indices:     [u1; SCOPE_MAX_DEPTH],
+    proof_indices:     [bool; SCOPE_MAX_DEPTH],
     proof_siblings:    [Field; SCOPE_MAX_DEPTH],
 ) {
     // 1. Rule Merkle membership
     let params_hash = compute_params_hash(rule_constraints);
     let rule_leaf   = compute_rule_leaf(rule_target, rule_selector, rule_value_max, params_hash);
-    let computed_root = binary_merkle_root(
-        poseidon2,
+    let computed_root = merkle_root_with_depth(
         rule_leaf,
         proof_length,
         proof_indices,
@@ -266,14 +265,13 @@ pub fn verify_labeled_scope_membership(
     // On-chain scope root and Merkle proof
     scope_root:        Field,
     proof_length:      u32,
-    proof_indices:     [u1; SCOPE_MAX_DEPTH],
+    proof_indices:     [bool; SCOPE_MAX_DEPTH],
     proof_siblings:    [Field; SCOPE_MAX_DEPTH],
 ) {
     // 1. Labeled rule Merkle membership
     let params_hash = compute_params_hash(rule_constraints);
     let rule_leaf   = compute_labeled_rule_leaf(rule_label, rule_target, rule_selector, rule_value_max, params_hash);
-    let computed_root = binary_merkle_root(
-        poseidon2,
+    let computed_root = merkle_root_with_depth(
         rule_leaf,
         proof_length,
         proof_indices,

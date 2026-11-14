@@ -5,6 +5,15 @@
   "main": "index.js",
   "author": "Microchain labs",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MicrochainLabs/zk-smart-account-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MicrochainLabs/zk-smart-account-kit/issues"
+  },
+  "homepage": "https://github.com/MicrochainLabs/zk-smart-account-kit#readme",
+  "keywords": ["zero-knowledge", "noir", "smart-account", "account-abstraction", "erc-8039", "safe", "erc-7579"],
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test"
@@ -32,9 +41,9 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.8.0",
-    "@aztec/bb.js": "3.0.0-nightly.20260102",
+    "@aztec/bb.js": "5.0.0-nightly.20260522",
     "@iden3/js-crypto": "^1.3.2",
-    "@noir-lang/noir_js": "1.0.0-beta.18",
+    "@noir-lang/noir_js": "1.0.0-beta.22",
     "@openzeppelin/contracts": "^5.2.0",
     "@safe-global/protocol-kit": "^6.0.4",
     "@safe-global/safe-contracts": "1.4.1-2",

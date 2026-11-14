@@ -4,6 +4,6 @@ type = "lib"
 authors = ["Walid Khemiri"]
 
 [dependencies]
-keccak256 = { tag = "v0.1.1", git = "https://github.com/noir-lang/keccak256" }
-poseidon = { tag = "v0.2.0", git = "https://github.com/noir-lang/poseidon" }
-binary_merkle_root = { git = "https://github.com/privacy-scaling-explorations/zk-kit.noir", tag = "binary-merkle-root-v0.0.1", directory = "packages/binary-merkle-root" }
+merkle_tree = { path = "../merkle_tree" }
+keccak256 = { tag = "v0.1.2", git = "https://github.com/noir-lang/keccak256" }
+poseidon = { git = "https://github.com/noir-lang/poseidon", tag = "v0.3.0" }

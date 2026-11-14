@@ -1,6 +1,6 @@
 use poseidon::poseidon::bn254::hash_1 as poseidon1;
 use poseidon::poseidon::bn254::hash_2 as poseidon2;
-use binary_merkle_root::binary_merkle_root;
+use merkle_tree::merkle_root_with_depth;
 
 // --- Constants ----------------------------------------------------------------
 
@@ -58,7 +58,7 @@ pub fn verify_label_membership(
     address_field: Field,
     registry_root: Field,
     proof_length: u32,
-    proof_indices: [u1; LABELS_MAX_DEPTH],
+    proof_indices: [bool; LABELS_MAX_DEPTH],
     proof_siblings: [Field; LABELS_MAX_DEPTH],
 ) -> Field {
     // Convert label bytes to Field (big-endian 31-byte integer)
@@ -68,8 +68,7 @@ pub fn verify_label_membership(
     let commitment = label_leaf(label_field, address_field);
 
     // Verify Merkle membership proof
-    let computed_root = binary_merkle_root(
-        poseidon2,
+    let computed_root = merkle_root_with_depth(
         commitment,
         proof_length,
         proof_indices,

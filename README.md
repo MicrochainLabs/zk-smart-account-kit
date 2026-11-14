@@ -1,5 +1,9 @@
 # zk-smart-account-kit
 
+[![CI](https://github.com/MicrochainLabs/zk-smart-account-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/MicrochainLabs/zk-smart-account-kit/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/MicrochainLabs/zk-smart-account-kit?include_prereleases)](https://github.com/MicrochainLabs/zk-smart-account-kit/releases)
+
 **Composable zero-knowledge primitives for smart accounts — built with Noir**
 
 A suite of Noir circuit libraries and executable circuits for privacy-preserving identity, threshold signatures, and programmable access control. Designed to integrate natively with [Safe](https://safe.global) and [Nexus (ERC-7579)](https://erc7579.com) smart accounts via the [ERC-8039](https://eips.ethereum.org/EIPS/eip-8039) proof verification standard.
@@ -21,6 +25,7 @@ zk-smart-account-kit/
 ├── Nargo.toml                   # Noir workspace manifest
 │
 ├── lib/                         # Reusable circuit libraries (type = "lib")
+│   ├── merkle_tree/             # Variable-depth Poseidon Merkle root (zk-kit merkle-trees)
 │   ├── zk_signer/               # ECDSA address recovery inside ZK
 │   ├── zk_labels/               # Privacy-preserving identity / role naming
 │   └── zk_scope/                # Programmable transaction access control
@@ -51,7 +56,7 @@ The cryptographic foundation. Verifies secp256k1 ECDSA signatures inside a Noir 
 
 Binds human-readable labels (e.g. `"cfo"`, `"auditor"`, `"treasury"`) to Signer identifier(e.g. Ethereum addresse) in a Merkle tree. Proves label membership without revealing the full registry.
 
-**Dependencies:** `binary_merkle_root`, `poseidon`
+**Dependencies:** `merkle_tree`, `poseidon`
 
 **Key exports:**
 - `verify_label_membership(label, address, root, proof)` — Merkle membership proof
@@ -93,8 +98,8 @@ Install `ZKMultiSigValidator` as a validator module on any ERC-7579 account. Eac
 
 | Tool | Version | Install |
 |---|---|---|
-| [Noir / nargo](https://noir-lang.org) | `1.0.0-beta.18` | `noirup -v 1.0.0-beta.18` |
-| [Barretenberg / bb](https://github.com/AztecProtocol/barretenberg) | `3.0.0-nightly.20260102` | `bbup -v 3.0.0-nightly.20260102` |
+| [Noir / nargo](https://noir-lang.org) | `1.0.0-beta.22` | `noirup -v 1.0.0-beta.22` |
+| [Barretenberg / bb](https://github.com/AztecProtocol/barretenberg) | `5.0.0-nightly.20260522` | `bbup -v 5.0.0-nightly.20260522` |
 
 ## Getting Started
 
@@ -174,7 +179,7 @@ bb verify -k ./target/vk/vk -p ./target/proof/proof
 All circuits target the **BN254** scalar field and use:
 
 - **Poseidon1** for signer leaves; **Poseidon2** for state roots, label leaves, scope rule leaves
-- **Binary Merkle Tree** (`binary_merkle_root`) for membership proofs
+- **Binary Merkle Tree** (`merkle_tree::merkle_root_with_depth`, built on the zk-kit `merkle-trees` library; path indices are `bool`s) for membership proofs
 - **secp256k1** for ECDSA signature verification
 - **UltraHonk / Barretenberg** as the default backend
 
@@ -182,7 +187,17 @@ All circuits target the **BN254** scalar field and use:
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party dependencies (Safe, Nexus, OpenZeppelin, Barretenberg, ...) remain under their own licenses.
+
+---
+
+## Security
+
+Please report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Release history is in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

@@ -1,5 +1,5 @@
 use poseidon::poseidon::bn254::hash_2 as poseidon2;
-use binary_merkle_root::binary_merkle_root;
+use merkle_tree::merkle_root_with_depth;
 use zk_signer::address_to_field;
 use zk_labels::{label_leaf, label_to_field, LABELS_MAX_DEPTH, LABEL_NAME_BYTES};
 
@@ -64,7 +64,7 @@ fn main(
     signer_address_bytes: [[u8; 20]; MAX_SUBSET_SIGNERS],
     is_active:            [bool; MAX_SUBSET_SIGNERS],
     main_proof_lengths:   [u32; MAX_SUBSET_SIGNERS],
-    main_proof_indices:   [[u1; LABELS_MAX_DEPTH]; MAX_SUBSET_SIGNERS],
+    main_proof_indices:   [[bool; LABELS_MAX_DEPTH]; MAX_SUBSET_SIGNERS],
     main_proof_siblings:  [[Field; LABELS_MAX_DEPTH]; MAX_SUBSET_SIGNERS],
     // Public inputs
     main_signers_root:   pub Field,
@@ -81,8 +81,7 @@ fn main(
         // Compute the root implied by this leaf + its Merkle proof path.
         // For inactive slots the proof inputs are arbitrary; the conditional
         // assertion below makes the check a no-op for those slots.
-        let implied_root = binary_merkle_root(
-            poseidon2,
+        let implied_root = merkle_root_with_depth(
             leaf,
             main_proof_lengths[i],
             main_proof_indices[i],
